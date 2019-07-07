@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+        <title>Turn-based game</title>
+    </head>
+    <body onload="onceLoaded()">
+        <main>
+            <article class="gameBoard">
+                <section class="grid_item player_area">
+                    <h1>Player1 <span id="player">name or shape</span></h1>
+                    <h1>Power <span id="power">100</span></h1>
+                    <h1>Weapon <span id="weapon">something</span></h1>
+                    <!-- <button type="button" name="button">Start Game</button> -->
+                </section>
+                <section id="game-grid" class="grid_item"></section>
+                <section class="grid_item player_area">
+                    <h1>Player2</h1>
+                    <h1>Power</h1>
+                    <h1>Weapon</h1>
+                </section>
+            </article>
+        </main>
+        <script type="text/javascript" src="script.js"></script>
+    </body>
+</html>

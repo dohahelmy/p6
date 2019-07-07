@@ -1,0 +1,57 @@
+body{
+    background-color: #191b1f;
+}
+
+#game-grid{
+    display: grid;
+    grid-gap: 3px;
+    grid-template-columns: repeat(12, 45px);
+    grid-template-rows: repeat(12, 45px);
+    justify-content: center;
+    background-color: #ebeff7;
+    padding: 10px;
+}
+
+.grid-cell{
+    border: thin solid grey;
+    display: grid;
+    align-items: center;
+    /* justify-content: center; */
+}
+
+.sprite, .blocker, .weapon{
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.sprite{
+    height: 35px;
+    /* background-image: url("ninja-blue.png"); */
+}
+
+.blocker{
+    height: 40px;
+    background-image: url("blocker.png");
+}
+.weapon{
+    height: 30px;
+    background-image: url("v.png");
+}
+
+.gameBoard{
+    display: grid;
+    grid-template-columns: 28% auto 28%;
+    grid-template-rows: 100%;
+}
+
+.grid_item{
+    display: inline-grid;
+}
+
+.player_area{
+    margin: 20px 50px;
+    padding: 30px;
+    background-color: #ebeff7;
+    height: 200px;
+}
