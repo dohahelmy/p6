@@ -35,14 +35,14 @@ main{
     background-position: center;
 }
 
-.first-sprite{background-image: url("turtle.png");}
-.second-sprite{background-image: url("whale.png");}
-.blocker{background-image: url("blocker.png");}
-.w1{background-image: url("weapons/w-bag.png");}
-.w2{background-image: url("weapons/w-oil.png");}
-.w3{background-image: url("weapons/w-bottle.png");}
-.w4{background-image: url("weapons/w-cup.png");}
-.w5{background-image: url("weapons/w-garbage.png");}
+.first-sprite{background-image: url("../img/turtle.png");}
+.second-sprite{background-image: url("../img/whale.png");}
+.blocker{background-image: url("../img/blocker.png");}
+.w1{background-image: url("../img/weapons/w-bag.png");}
+.w2{background-image: url("../img/weapons/w-oil.png");}
+.w3{background-image: url("../img/weapons/w-bottle.png");}
+.w4{background-image: url("../img/weapons/w-cup.png");}
+.w5{background-image: url("../img/weapons/w-garbage.png");}
 
 .gameBoard{
     display: grid;
