@@ -5,23 +5,31 @@
         <link rel="stylesheet" href="style.css">
         <title>Turn-based game</title>
     </head>
-    <body onload="onceLoaded()">
+    <body>
         <main>
             <article class="gameBoard">
-                <section class="grid_item player_area">
-                    <h1>Player1 <span id="player">name or shape</span></h1>
-                    <h1>Power <span id="power">100</span></h1>
-                    <h1>Weapon <span id="weapon">something</span></h1>
-                    <!-- <button type="button" name="button">Start Game</button> -->
+                <section class="grid-item" >
+                    <div id="turtle" class="player-board">
+                        <img src="turtle.png">
+                        <div class="turn-on"></div>
+                        <h1>power</h1>
+                        <progress value="35" max="100"></progress>
+                        <h1>weapon</h1>
+                    </div>
                 </section>
                 <section id="game-grid" class="grid_item"></section>
-                <section class="grid_item player_area">
-                    <h1>Player2</h1>
-                    <h1>Power</h1>
-                    <h1>Weapon</h1>
+                <section class="grid-item">
+                    <div id="whale" class="player-board">
+                        <img src="whale.png">
+                        <div class="turn-on"></div>
+                        <h1>power</h1>
+                        <progress value="70" max="100"></progress>
+                        <h1>weapon</h1>
+                    </div>
                 </section>
             </article>
         </main>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="script.js"></script>
     </body>
 </html>

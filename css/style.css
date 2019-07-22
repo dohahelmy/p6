@@ -1,0 +1,73 @@
+body{
+    background-color: #23d7c8;
+    margin: 0;
+}
+
+main{
+    /* background-image: url('bg.png'); */
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+#game-grid{
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: repeat(10, 55px);
+    grid-template-rows: repeat(10, 55px);
+    justify-content: center;
+    /* padding: 28px 0; */
+}
+
+.grid-cell{
+    background-color: white;
+    border-radius: 3px;
+    display: grid;
+    align-items: center;
+}
+
+/* .grid-cell:hover{
+    background-color: #cbd6b2;
+} */
+
+.sprite, .blocker, .weapon{
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.first-sprite{background-image: url("turtle.png");}
+.second-sprite{background-image: url("whale.png");}
+.blocker{background-image: url("blocker.png");}
+.w1{background-image: url("weapons/w-bag.png");}
+.w2{background-image: url("weapons/w-oil.png");}
+.w3{background-image: url("weapons/w-bottle.png");}
+.w4{background-image: url("weapons/w-cup.png");}
+.w5{background-image: url("weapons/w-garbage.png");}
+
+.gameBoard{
+    display: grid;
+    margin: auto 30px;
+    margin-top: 30px;
+    grid-template-columns: 25% auto 25%;
+    /* grid-template-rows: 100%; */
+}
+
+.player-board{
+    height: 350px;
+    border-radius: 30px;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    margin-top: 90px;
+    background-color: white;
+    box-shadow: 1px 1px 20px 0px #1f1f1f;
+}
+
+
+.turn-on{
+    width: 25px;
+    height: 25px;
+    border-radius: 50px;
+    margin: 10px auto;
+    background-color: #d5d5d5;
+}
