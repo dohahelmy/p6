@@ -9,6 +9,28 @@ main{
     background-size: contain;
 }
 
+#start{
+    width: 568px;
+    height: 568px;
+    background-color: white;
+    /* position: absolute; */
+}
+
+#start .start_content{
+    margin: 100px;
+}
+
+#start_button{
+    background-color: #529c3b;
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    width: 150px;
+    /* margin: 150px auto; */
+    padding: 10px 30px;
+    border-radius: 3px;
+}
+
 #game-grid{
     display: grid;
     grid-gap: 2px;
@@ -70,4 +92,21 @@ main{
     border-radius: 50px;
     margin: 10px auto;
     background-color: #d5d5d5;
+}
+
+.attack{
+    display: none;
+}
+
+.attack .attack_buttons{
+    padding: 5px 15px;
+    color: #fff;
+    border: none;
+}
+
+.attack .attack_buttons:first-child{
+    background-color: #cc1414;
+}
+.attack .attack_buttons:last-child{
+    background-color: #529c3b;
 }

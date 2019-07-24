@@ -1,9 +1,7 @@
 // Definitions
-let gridVal;
-let players = ["cell-1-1", "cell-10-10"];
-let turn = 1;
-let blockers = [];
-let weapons = [];
+let turn = 1; let gridVal;
+let players = ["cell_1-1", "cell_10-10"];
+let blockers = []; let weapons = [];
 let firstPlayer; let secondPlayer;
 
 // players class and Definitions
@@ -18,19 +16,11 @@ class player {
         let playerCell = $('#' + this.position);
         playerCell.addClass('sprite ' + this.spriteClass);
     };
+    changePosition(newPosition){
+        $(this.position).removeClass(this.spriteClass);
+        $(newPosition).addClass(this.spriteClass);
+    };
 }
-
-/*
-changePosition(newPostion){
-    $(palyer.postion).removeClass('playerone');
-}
-changePosition(newPostion){
-    $(palyer.postion).removeClass('playerone');
-    changePosition(newPostion){
-        $(newPostion).addClass('playerone');
-    }
-}
-*/
 
 // function to create the grid
 function createGrid() {
@@ -38,7 +28,7 @@ function createGrid() {
     let grid = $('#game-grid');
     for (let i = 1; i <= 100; i++) {
         gridval = cellPosition(i);
-        let gridCell = "<div class='grid-cell' id='cell-" + gridval + "'></div>";
+        let gridCell = "<div class='grid-cell' id='cell_" + gridval + "'></div>";
         grid.append(gridCell);
     }
 }
@@ -63,7 +53,7 @@ function cellPosition(i){
 function randomLocation (){
     let randomPosition = Math.floor((Math.random() * 100) + 1);
     gridval = cellPosition(randomPosition);
-    let cell_id = 'cell-' + gridval;
+    let cell_id = 'cell_' + gridval;
     return cell_id;
 }
 
@@ -102,34 +92,37 @@ function weaponsPositions(){
     }
 }
 
+
 // function to start game and switching turns
 function startGame() {
     if (turn == 1){
-        // $('.turn-on').css('background-color', '#5eb80b');
-        let p1 = firstPlayer.position;
-        console.log(p1);
-        firstPlayer.position = movements(p1);
-        // console.log(firstPlayer.position);
-        turn == 2;
+        $('#turtle_on').css('background-color', '#5eb80b');
+        $('#whale_on').css('background-color', '#d5d5d5');
+        let p = movements(firstPlayer.position);
+        firstPlayer.changePosition(p);
+        turn = 2;
     }
     else if (turn == 2) {
-        let p2 = secondPlayer.position;
-        // console.log(p2);
-        secondPlayer.position = movements(p2);
-        // console.log(secondPlayer.position);
-        turn == 1;
+        $('#whale_on').css('background-color', '#5eb80b');
+        $('#turtle_on').css('background-color', '#d5d5d5');
+        let p = movements(secondPlayer.position);
+        secondPlayer.changePosition(p);
+        turn = 1;
     }
+}
+
+// function to extract x and y values of a position
+function xy_extract(position){
+    let dash = position.indexOf("-");
+    let x_value = parseInt(position.substring(5, dash), 10);
+    let y_value = parseInt(position.substring(dash + 1, position.length), 10);
+    return [x_value, y_value];
 }
 
 // movements function
 function movements(position){
-    // extracting x and y values for movements
-    let dash = position.indexOf("-");
-    let x_value = parseInt(position.substring(5, dash), 10);
-    console.log(x_value);
-    let y_value = parseInt(position.substring(dash + 1, position.length), 10);
-    let x_new = x_value;
-    let y_new = y_value;
+    let x_new = xy_extract(position)[0];
+    let y_new = xy_extract(position)[1];
     let updatedPosition;
     let steps = 0;
 
@@ -171,25 +164,59 @@ function movements(position){
                     steps++;
                 }
                 break;
+            case 32:
+                startGame();
             default:
-            // alert('press arrows');
         }
-        updatedPosition = "cell-" + x_new +"-"+ y_new;
+        updatedPosition = "cell_" + x_new.toString(10) +"-"+ y_new.toString(10);
         console.log(updatedPosition);
-        // return updatedPosition;
     });
-    // create change position function instructed by mostafa
     return updatedPosition;
 }
 
+
+// fuction to execute attack action
+function attack(){
+    let p1_xy = xy_extract(firstPlayer.position);
+    let p2_xy = xy_extract(secondPlayer.position);
+    let x_difference = p1_xy[0] - p2_xy[0];
+    let y_difference = p1_xy[1] - p2_xy[1];
+    if(
+        (x_difference == -1 || x_difference == 1) ||
+        (y_difference == -1 || y_difference == 1)){
+            $('.attack').css('display', 'block');
+            if(turn == 1){
+                $('#turtle_attack').click(function(){
+                    $('#whale_power').value -= 10;
+                });
+                $('#turtle_defend').click(function(){
+                    $('#turtle_power').value -= 5;
+                });
+                if($('#turtle_power').value == 100){
+                    alert('Game over');
+                }
+            }else if(turn == 2){
+                $('#whale_attack').click(function(){
+                    $('#turtle_power').value -= 10;
+                });
+                $('#whale_defend').click(function(){
+                    $('#whale_power').value -= 5;
+                });
+                if($('#whale_power').value == 100){
+                    alert('Game over');
+                }
+            }
+    }
+}
+
 // all functions needs to be loaded with page
-$(document).ready(function(){
+$('#start_button').click(function(){
+    $( "#start" ).replaceWith( "" );
     createGrid();
     weaponsPositions();
     blockersPositions();
-
-    firstPlayer = new player("player1", "first-sprite", "cell-1-1", '1');
-    secondPlayer = new player("player2", "second-sprite", "cell-10-10", '2');
+    firstPlayer = new player("player1", "first-sprite", "cell_1-1", '1');
+    secondPlayer = new player("player2", "second-sprite", "cell_10-10", '2');
     firstPlayer.playerPosition();
     secondPlayer.playerPosition();
     startGame();
