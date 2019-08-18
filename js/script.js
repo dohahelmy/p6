@@ -3,6 +3,7 @@ let turn = 1; let gridVal;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
 let firstPlayer; let secondPlayer;
+let weapon_class;
 // players class and Definitions
 class player {
     constructor(name, spriteClass, position, turn) {
@@ -11,6 +12,7 @@ class player {
         this.position = position;
         this.turn = turn;
         this.attackValue = 10;
+        this.weapon;
     }
     playerPosition() {
         let playerCell = $('#' + this.position);
@@ -44,7 +46,7 @@ function cellPosition(i){
     if(gridCol > 0){
         gridRow = gridRow + 1;
     }
-    //to identify the position of the last cell (12th) on grid
+    //to identify the position of the last cell (10th) on grid
     else if(gridCol == 0){
         gridCol = 10;
     }
@@ -100,14 +102,12 @@ function startGame() {
     if (turn == 1){
         $('#whale_on').css('background-color', '#d5d5d5');
         $('#turtle_on').css('background-color', '#5eb80b');
-        $(document).unbind('keydown');
         let p = movements(firstPlayer);
         turn = 2;
     }
     else if (turn == 2) {
         $('#turtle_on').css('background-color', '#d5d5d5');
         $('#whale_on').css('background-color', '#5eb80b');
-        $(document).unbind('keydown');
         let p = movements(secondPlayer);
         turn = 1;
     }
@@ -121,101 +121,126 @@ function xy_extract(position){
     return [x_value, y_value];
 }
 
+function id_value(x, y){
+    return "cell_" + x.toString(10) + '-' + y.toString(10);
+}
 // movements function
 function movements(player){
     let x_new = xy_extract(player.position)[0];
     let y_new = xy_extract(player.position)[1];
     let updatedPosition;
-    let steps = 0;
+    let possibleCellID;
+    let move = true;
 
-    $(document).keydown(function (e) {
-        switch (e.keyCode) {
-            // left arrow
-            case 37:
-                if (x_new == 1) {
-                    alert('unacceptable move');
-                }else {
-                    x_new--;
-                    steps++;
-                }
-                break;
-            // up arrow
-            case 38:
-                if (y_new == 1) {
-                    alert('unacceptable move');
-                }else {
-                    y_new--;
-                    steps++;
-                }
-                break;
-            // right arrow
-            case 39:
-                if (x_new == 10) {
-                    alert('unacceptable move');
-                }else {
-                    x_new++;
-                    steps++;
-                }
-                break;
-            // down arrow
-            case 40:
-                if (y_new == 10) {
-                    alert('unacceptable move');
-                }else {
-                    y_new++;
-                    steps++;
-                }
-                break;
-            case 32:
-                startGame();
-            default:
+    // if(move == false){
+    //
+    // }
+    // possible cells horizontally
+    for(let i = x_new + 1; i <= x_new + 3; i++){
+        possibleCellID = id_value(i, y_new);
+        if($('#' + possibleCellID).hasClass('blocker')){
+            break;
+        } else if($('#' + possibleCellID).hasClass('sprite')){
+            break;
+        } else if(i>10){
+            break;
+        }else{
+            $('#' + possibleCellID).addClass('possible-cell');
         }
-        updatedPosition = "cell_" + x_new.toString(10) +"-"+ y_new.toString(10);
-        if(blockers.indexOf(updatedPosition) > -1){
-            alert("blocker ahead!");
-        }else {
-            if(weapons.indexOf(updatedPosition) > -1){
-                let current_cell = $('#' + updatedPosition);
-                let weapon_class = current_cell.attr('class').split(' ').pop();
-                current_cell.removeClass(weapon_class + ' weapon');
-                console.log(weapon_class);
-                switch (weapon_class) {
-                    case 'w1':
-                        $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bag.png');
-                    break;
-                    case "w2":
-                        $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-oil.png');
-                    break;
-                    case 'w3':
-                        $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bottle.png');
-                    break;
-                    case 'w4':
-                        $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-cup.png');
-                    break;
-                    case 'w5':
-                        $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-garbage.png');
-                    break;
-                    default:
-                }
+
+    }
+    for(let i = x_new - 1; i >= x_new - 3; i--){
+        possibleCellID = id_value(i, y_new);
+        if($('#' + possibleCellID).hasClass('blocker')){
+            break;
+        } else if($('#' + possibleCellID).hasClass('sprite')){
+            break;
+        } else if(i<1){
+            break;
+        }else{
+            $('#' + possibleCellID).addClass('possible-cell');
+        }
+    }
+
+    // possible cells vertically
+    for(let i = y_new + 1; i <= y_new + 3; i++){
+        possibleCellID = id_value(x_new, i);
+        if($('#' + possibleCellID).hasClass('blocker')){
+            break;
+        } else if($('#' + possibleCellID).hasClass('sprite')){
+            break;
+        }else if(i>10){
+            break;
+        } else{
+            $('#' + possibleCellID).addClass('possible-cell');
+        }
+    }
+    for(let i = y_new - 1; i >= y_new - 3; i--){
+        possibleCellID = id_value(x_new, i);
+        if($('#' + possibleCellID).hasClass('blocker')){
+            break;
+        } else if($('#' + possibleCellID).hasClass('sprite')){
+            break;
+        } else if(i<1){
+            break;
+        }else{
+            $('#' + possibleCellID).addClass('possible-cell');
+        }
+    }
+
+    let possibleCell = $('.possible-cell');
+    // possibleCell.hover(function(){
+    //     $(this).css('background-color', '#5eb80b');
+    //     $(this).css('cursor', 'pointer');
+    // }, function(){
+    //     $(this).css('background-color', '');
+    // });
+
+    possibleCell.click( function(){
+        $('.grid-cell').removeClass('possible-cell');
+        updatedPosition = $(this).attr('id');
+        player.changePosition(updatedPosition);
+        // take weapon
+        if(weapons.indexOf(updatedPosition) > -1){
+            weapon_class = $(this).attr('class').split(' ').splice(2, 1);
+            $(this).removeClass(weapon_class + ' weapon');
+            switch (weapon_class[0]) {
+                case 'w1':
+                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bag.png');
+                break;
+                case "w2":
+                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-oil.png');
+                break;
+                case 'w3':
+                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bottle.png');
+                break;
+                case 'w4':
+                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-cup.png');
+                break;
+                case 'w5':
+                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-garbage.png');
+                break;
+                default:
             }
-            player.changePosition(updatedPosition);
         }
+        // fight activation state
+        let p1_xy = xy_extract(firstPlayer.position);
+        let p2_xy = xy_extract(secondPlayer.position);
+        let x_diff = p1_xy[0] - p2_xy[0];
+        let y_diff = p1_xy[1] - p2_xy[1];
+        if(
+            (x_diff == -1 && y_diff == 0) ||
+            (x_diff == 1 && y_diff == 0) ||
+            (x_diff == 0 && y_diff == -1) ||
+            (x_diff == 0 && y_diff == 1)){
+                fight();
+            }
+        startGame();
     });
-    let p1_xy = xy_extract(firstPlayer.position);
-    let p2_xy = xy_extract(secondPlayer.position);
-    let x_diff = p1_xy[0] - p2_xy[0];
-    let y_diff = p1_xy[1] - p2_xy[1];
-    if(
-        (x_diff == -1 && y_diff == 0) ||
-        (x_diff == 1 && y_diff == 0) ||
-        (x_diff == 0 && y_diff == -1) ||
-        (x_diff == 0 && y_diff == 1)){
-            attack();
-        }
 }
 
 // fuction to execute attack action
-function attack(){
+function fight(){
     if(turn == 1){
         $('#turtle_btns').css('display', 'block');
         $('#whale_btns').css('display', 'none');
