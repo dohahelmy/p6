@@ -1,39 +1,60 @@
-// Definitions
-let turn = 1; let gridVal;
+/*____________________________________________________________________________
+Defenitions
+____________________________________________________________________________*/
+// Global Definitions
+let turn = 1; let cell_val;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
 let firstPlayer; let secondPlayer;
-let weapon_class;
+
+// let weapon_class;
+
 // players class and Definitions
 class player {
-    constructor(name, spriteClass, position, turn) {
+    constructor(name, spriteClass, position, turn, power) {
         this.name = name;
         this.spriteClass = spriteClass;
         this.position = position;
         this.turn = turn;
+        this.power = power;
         this.attackValue = 10;
-        this.weapon;
-    }
+        this.weapon = null;
+        console.log(this.weapon);
+     }
     playerPosition() {
         let playerCell = $('#' + this.position);
         playerCell.addClass('sprite ' + this.spriteClass);
     };
     changePosition(newPosition){
-        $('#' + this.position).removeClass(this.spriteClass);
+        $('#' + this.position).removeClass('sprite ' + this.spriteClass);
         $('#' + newPosition).addClass('sprite ' + this.spriteClass);
         this.position = newPosition;
-        console.log(this.name + ": " + this.position);
     };
+    winner(){
+        $('#turtle_btns').css('display', "none");
+        $('#whale_btns').css('display', "none");
+        $(this).append("<h1 class='winner'>WINNER</h1>");
+    }
 }
 
+
+/*____________________________________________________________________________
+Mini functions
+____________________________________________________________________________*/
+// function to check if the value is existed in the array
+/*function isInArray(value, array) {
+    return array.indexOf(value) > -1;
+}*/
+
+/*____________________________________________________________________________
+Grid creating and Grid-cells position assign and extraction
+____________________________________________________________________________*/
 // function to create the grid
 function createGrid() {
-    // document.getElementById
-    let grid = $('#game-grid');
     for (let i = 1; i <= 100; i++) {
-        gridval = cellPosition(i);
-        let gridCell = "<div class='grid-cell' id='cell_" + gridval + "'></div>";
-        grid.append(gridCell);
+        cell_val = cellPosition(i);
+        let gridCell = "<div class='grid-cell' id='cell_" + cell_val + "'></div>";
+        $('#game-grid').append(gridCell);
     }
 }
 
@@ -56,61 +77,9 @@ function cellPosition(i){
 // generate random location
 function randomLocation (){
     let randomPosition = Math.floor((Math.random() * 100) + 1);
-    gridval = cellPosition(randomPosition);
-    let cell_id = 'cell_' + gridval;
+    cell_val = cellPosition(randomPosition);
+    let cell_id = 'cell_' + cell_val;
     return cell_id;
-}
-
-// function to check if the value is existed in the array
-/*function isInArray(value, array) {
-  return array.indexOf(value) > -1;
-}*/
-
-// blocker random locations load
-function blockersPositions(){
-    for (let i = 0; i < 10; i++) {
-        let idPosition = randomLocation();
-        // check id retunred if reserved or not
-        if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
-            i--;
-        } else{
-            // assign checked values
-            blockers[i] = idPosition;
-            let locationValue = $('#' + idPosition);
-            locationValue.addClass('blocker');
-        }
-    }
-}
-// weapons random locations load
-function weaponsPositions(){
-    for (let i = 1; i < 6; i++) {
-        let idPosition = randomLocation();
-        // check id retunred if reserved or not
-        if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
-            i--;
-        } else {
-            // assign checked values
-            weapons[i] = idPosition;
-            let locationValue = $('#' + idPosition);            locationValue.addClass('weapon w' + [i]);
-        }
-    }
-}
-
-
-// function to start game and switching turns
-function startGame() {
-    if (turn == 1){
-        $('#whale_on').css('background-color', '#d5d5d5');
-        $('#turtle_on').css('background-color', '#5eb80b');
-        let p = movements(firstPlayer);
-        turn = 2;
-    }
-    else if (turn == 2) {
-        $('#turtle_on').css('background-color', '#d5d5d5');
-        $('#whale_on').css('background-color', '#5eb80b');
-        let p = movements(secondPlayer);
-        turn = 1;
-    }
 }
 
 // function to extract x and y values of a position
@@ -121,108 +90,181 @@ function xy_extract(position){
     return [x_value, y_value];
 }
 
-function id_value(x, y){
-    return "cell_" + x.toString(10) + '-' + y.toString(10);
-}
-// movements function
-function movements(player){
-    let x_new = xy_extract(player.position)[0];
-    let y_new = xy_extract(player.position)[1];
-    let updatedPosition;
-    let possibleCellID;
-    let move = true;
 
-    // if(move == false){
-    //
-    // }
-    // possible cells horizontally
-    for(let i = x_new + 1; i <= x_new + 3; i++){
-        possibleCellID = id_value(i, y_new);
-        if($('#' + possibleCellID).hasClass('blocker')){
-            break;
-        } else if($('#' + possibleCellID).hasClass('sprite')){
-            break;
-        } else if(i>10){
-            break;
-        }else{
-            $('#' + possibleCellID).addClass('possible-cell');
-        }
-
-    }
-    for(let i = x_new - 1; i >= x_new - 3; i--){
-        possibleCellID = id_value(i, y_new);
-        if($('#' + possibleCellID).hasClass('blocker')){
-            break;
-        } else if($('#' + possibleCellID).hasClass('sprite')){
-            break;
-        } else if(i<1){
-            break;
-        }else{
-            $('#' + possibleCellID).addClass('possible-cell');
-        }
-    }
-
-    // possible cells vertically
-    for(let i = y_new + 1; i <= y_new + 3; i++){
-        possibleCellID = id_value(x_new, i);
-        if($('#' + possibleCellID).hasClass('blocker')){
-            break;
-        } else if($('#' + possibleCellID).hasClass('sprite')){
-            break;
-        }else if(i>10){
-            break;
+/*____________________________________________________________________________
+// Blockers functions //
+____________________________________________________________________________*/
+// blocker random locations load
+function blockersPositions(){
+    for (let i = 0; i < 10; i++) {
+        let idPosition = randomLocation();
+        // check id retunred if reserved or not
+        if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
+            i--;
         } else{
-            $('#' + possibleCellID).addClass('possible-cell');
+            // assign checked values
+            blockers[i] = idPosition;
+            $('#' + idPosition).addClass('blocker');
         }
     }
-    for(let i = y_new - 1; i >= y_new - 3; i--){
-        possibleCellID = id_value(x_new, i);
-        if($('#' + possibleCellID).hasClass('blocker')){
-            break;
-        } else if($('#' + possibleCellID).hasClass('sprite')){
-            break;
-        } else if(i<1){
-            break;
-        }else{
-            $('#' + possibleCellID).addClass('possible-cell');
+}
+
+
+/*____________________________________________________________________________
+// Weapons-related functions //
+____________________________________________________________________________*/
+// weapons random locations load
+function weaponsPositions(){
+    for (let i = 1; i < 6; i++) {
+        let idPosition = randomLocation();
+        // check id retunred if reserved or not
+        if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
+            i--;
+        } else {
+            // assign checked values
+            weapons[i] = idPosition;
+            $('#' + idPosition).addClass('weapon w' + [i]);
         }
     }
+}
 
-    let possibleCell = $('.possible-cell');
-    // possibleCell.hover(function(){
-    //     $(this).css('background-color', '#5eb80b');
-    //     $(this).css('cursor', 'pointer');
-    // }, function(){
-    //     $(this).css('background-color', '');
-    // });
+// Adding weapom image to player board
+function collectedWeapon(player, weapon_num){
+    player.weapon = weapon_num;
+    $('.'+weapon_num).removeClass(weapon_num);
+    return $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
 
-    possibleCell.click( function(){
+}
+
+// Droping current weapon and collecting new weapon
+
+function dropingWeapon(player, position, new_weapon){
+    $('#' + player.position).addClass('weapon ' + player.weapon);
+    player.changePosition(position);
+    let newWeapon = collectedWeapon(player, new_weapon);
+    player.weapon = new_weapon;
+}
+
+
+/*____________________________________________________________________________
+// Game-related Actions functions  //
+____________________________________________________________________________*/
+// function to switching turns using a bullet on board
+function changeTurn(){
+    if (turn == 1){
+        $('#whale_on').css('background-color', '#d5d5d5');
+        $('#turtle_on').css('background-color', '#5eb80b');
+        turn = 2;
+    }
+    else if (turn == 2) {
+        $('#turtle_on').css('background-color', '#d5d5d5');
+        $('#whale_on').css('background-color', '#5eb80b');
+        turn = 1;
+    }
+}
+
+// activating movements functions on turn
+function turnOnMovement() {
+    $('.grid-cell').unbind('click');
+    if (turn == 1){
+        movements(firstPlayer);
+        changeTurn();
+    }
+    else if (turn == 2) {
+        movements(secondPlayer);
+        changeTurn();
+    }
+}
+
+
+function id_value(x, y){
+    return "cell_" + x.toString() + '-' + y.toString();
+}
+
+
+let possibleCellID;
+let lower = [];
+// Mostafa edits
+function isblocker(i){
+    return $('#' + possibleCellID).hasClass('blocker') ||  $('#' + possibleCellID).hasClass('sprite') || (i < 1) || (i > 10);
+}
+
+function lowerForLoop(){
+    for(let i = 0; i < lower.length; i++){
+        $('#' + lower[i]).addClass('possible-cell');
+    }
+    lower = [];
+}
+
+// function to get possible cells to move player in a new position
+function possibleSide(player){
+    let x = xy_extract(player.position)[0];
+    let y = xy_extract(player.position)[1];
+    let x_new = x - 3;
+    let y_new = y - 3;
+
+    // Horizontal possible cells
+    for(x_new; x_new <= x + 3; x_new++){
+        possibleCellID = id_value(x_new, y);
+        if(isblocker(x_new)){
+            if(x_new == x){
+                continue;
+            }
+            if(x_new < x){
+                lower = [];
+            } else{
+                break;
+            }
+        }else {
+            if(x_new < x){
+                lower.push(possibleCellID);
+            }else {
+                $('#' + possibleCellID).addClass('possible-cell');
+            }
+        }
+    }
+    lowerForLoop();
+
+    //Vertical possible cells
+    for(y_new; y_new <= y + 3; y_new++){
+        possibleCellID = id_value(x, y_new);
+        if(isblocker(y_new)){
+            if(y_new == y){
+                continue;
+            }
+            if(y_new < y){
+                lower = [];
+            } else{
+                break;
+            }
+        }else {
+            if(y_new < y){
+                lower.push(possibleCellID);
+            }else {
+                $('#' + possibleCellID).addClass('possible-cell');
+            }
+        }
+    }
+    lowerForLoop();
+}
+
+// On Click action to move player
+function registerListner(cells,player){
+    cells.bind("click", function(){
         $('.grid-cell').removeClass('possible-cell');
         updatedPosition = $(this).attr('id');
         player.changePosition(updatedPosition);
         // take weapon
         if(weapons.indexOf(updatedPosition) > -1){
-            weapon_class = $(this).attr('class').split(' ').splice(2, 1);
-            $(this).removeClass(weapon_class + ' weapon');
-            switch (weapon_class[0]) {
-                case 'w1':
-                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bag.png');
-                break;
-                case "w2":
-                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-oil.png');
-                break;
-                case 'w3':
-                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-bottle.png');
-                break;
-                case 'w4':
-                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-cup.png');
-                break;
-                case 'w5':
-                $('#' + player.name + '_weapon').attr('src', 'img/weapons/w-garbage.png');
-                break;
-                default:
+            let weapon_class = ($(this).attr('class').split(' ').splice(2, 1)).toString();
+            if(player.weapon == null){
+                collectedWeapon(player, weapon_class);
+            }else {
+                dropingWeapon(player, player.position, weapon_class);
             }
         }
+        // player.replaceWeapon(weapon_class);
+        console.log(turn);
         // fight activation state
         let p1_xy = xy_extract(firstPlayer.position);
         let p2_xy = xy_extract(secondPlayer.position);
@@ -234,57 +276,85 @@ function movements(player){
             (x_diff == 0 && y_diff == -1) ||
             (x_diff == 0 && y_diff == 1)){
                 fight();
+                console.log(turn);
+                return;
+        } else{
+            if (turn == 1){
+                turn = 2;
             }
-        startGame();
+            else if (turn == 2) {
+                turn = 1;
+            }
+            changeTurn();
+            turnOnMovement();
+        }
     });
 }
 
-// fuction to execute attack action
+// movements function
+function movements(player){
+    possibleSide(player);
+    let possibleCell = $('.possible-cell');
+    registerListner(possibleCell, player);
+}
+
+function fightBtns(player1, player2){
+    $('#' + player1 + '_btns').css('display', 'block');
+    $('#' + player2 + '_btns').css('display', 'none');
+}
+
+
 function fight(){
-    if(turn == 1){
-        $('#turtle_btns').css('display', 'block');
-        $('#whale_btns').css('display', 'none');
-        if($('#turtle_power').val()  <= 0){
-            alert('Game over');
-        }else {
+    // $('.grid-cell').unbind('click');
+    if (firstPlayer.power <= 0 || secondPlayer.power <= 0) {
+        alert('Game Over');
+    }else {
+        if (turn == 1) {
+            $('#whale_attack').unbind("click");
+            $('#whale_defend').unbind("click");
+            fightBtns(firstPlayer.name, secondPlayer.name);
             firstPlayer.attackValue = 10;
-            $('#turtle_attack').click(function(){
-                var curr_val = $('#whale_power').val();
-                var new_val = Number(curr_val) - secondPlayer.attackValue;
+            $('#turtle_attack').bind("click", function(){
+                let curr_val = $('#whale_power').val();
+                let new_val = Number(curr_val) - secondPlayer.attackValue;
                 $('#whale_power').val(new_val);
+                firstPlayer.power = new_val;
             });
-            $('#turtle_defend').click(function(){
+            $('#turtle_defend').bind("click", function(){
                 firstPlayer.attackValue = 5;
             });
-        }
-    }else if(turn == 2){
-        $('#whale_btns').css('display', 'block');
-        $('#turtle_btns').css('display', 'none');
-        if($('#whale_power').val() <= 0){
-            alert('Game over');
-        }else {
+            turn = 2;
+            changeTurn();
+        }else if (turn == 2) {
+            $('#turtle_attack').unbind("click");
+            $('#turtle_defend').unbind("click");
+            fightBtns(secondPlayer.name, firstPlayer.name);
             secondPlayer.attackValue = 10;
-            $('#whale_attack').click(function(){
-                var curr_val = $('#turtle_power').val();
-                var new_val = Number(curr_val) - firstPlayer.attackValue;
+            $('#whale_attack').bind("click", function(){
+                let curr_val = $('#turtle_power').val();
+                let new_val = Number(curr_val) - firstPlayer.attackValue;
                 $('#turtle_power').val(new_val);
+                secondPlayer.power = new_val;
             });
-            $('#whale_defend').click(function(){
+            $('#whale_defend').bind("click", function(){
                 secondPlayer.attackValue = 5;
             });
+            turn = 1;
+            changeTurn();
         }
     }
 }
 
+
 // all functions needs to be loaded with page
 $('#start_button').click(function(){
-    $( "#start" ).replaceWith( "" );
+    $( "#start" ).replaceWith("");
     createGrid();
     weaponsPositions();
     blockersPositions();
-    firstPlayer = new player("turtle", "first-sprite", "cell_1-1", '1');
-    secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2');
+    firstPlayer = new player("turtle", "first-sprite", "cell_1-1", '1', 100);
+    secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2', 100);
     firstPlayer.playerPosition();
     secondPlayer.playerPosition();
-    startGame();
+    turnOnMovement();
 });

@@ -47,9 +47,10 @@ main{
     align-items: center;
 }
 
-/* .grid-cell:hover{
-    background-color: #cbd6b2;
-} */
+.possible-cell{
+    background-color: #5eb80b;
+    cursor: pointer;
+}
 
 .sprite, .blocker, .weapon{
     background-repeat: no-repeat;
@@ -57,14 +58,14 @@ main{
     background-position: center;
 }
 
-.first-sprite{background-image: url("../img/turtle.png");}
-.second-sprite{background-image: url("../img/whale.png");}
+.first-sprite{background-image: url("../img/turtle.png") !important;}
+.second-sprite{background-image: url("../img/whale.png") !important;}
 .blocker{background-image: url("../img/blocker.png");}
-.w1{background-image: url("../img/weapons/w-bag.png");}
-.w2{background-image: url("../img/weapons/w-oil.png");}
-.w3{background-image: url("../img/weapons/w-bottle.png");}
-.w4{background-image: url("../img/weapons/w-cup.png");}
-.w5{background-image: url("../img/weapons/w-garbage.png");}
+.w1{background-image: url("../img/weapons/w1.png");}
+.w2{background-image: url("../img/weapons/w2.png");}
+.w3{background-image: url("../img/weapons/w3.png");}
+.w4{background-image: url("../img/weapons/w4.png");}
+.w5{background-image: url("../img/weapons/w5.png");}
 
 .gameBoard{
     display: grid;
@@ -109,4 +110,18 @@ main{
 }
 .attack .attack_buttons:last-child{
     background-color: #529c3b;
+}
+
+
+@keyframes winner{
+  from, 50%, to {
+    opacity: 1;
+  } 25%, 75% {
+    opacity: 0;
+  }
+}
+
+.winner{
+    color: #5eb80b;
+    animation-name: flash;
 }
