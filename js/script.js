@@ -6,7 +6,7 @@ let turn = 1; let cell_val;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
 let firstPlayer; let secondPlayer;
-
+let fightStatus = 0;
 // let weapon_class;
 
 // players class and Definitions
@@ -19,9 +19,8 @@ class player {
         this.power = power;
         this.attackValue = 10;
         this.weapon = null;
-        console.log(this.weapon);
      }
-    playerPosition() {
+    playerPosition(){
         let playerCell = $('#' + this.position);
         playerCell.addClass('sprite ' + this.spriteClass);
     };
@@ -33,7 +32,8 @@ class player {
     winner(){
         $('#turtle_btns').css('display', "none");
         $('#whale_btns').css('display', "none");
-        $(this).append("<h1 class='winner'>WINNER</h1>");
+        $('.wpn').css('display', 'none');
+        $('#' + this.name).append("<h1 class='winner'>WINNER</h1>");
     }
 }
 
@@ -164,17 +164,20 @@ function changeTurn(){
 }
 
 // activating movements functions on turn
-function turnOnMovement() {
+function moveOrFight() {
     $('.grid-cell').unbind('click');
-    if (turn == 1){
-        movements(firstPlayer);
-        changeTurn();
+    if(fightStatus == 0){
+        if(turn == 1){
+            movements(firstPlayer);
+        }else if(turn == 2){
+            movements(secondPlayer);
+        }
+    }else{
+        fight();
     }
-    else if (turn == 2) {
-        movements(secondPlayer);
-        changeTurn();
-    }
+    changeTurn();
 }
+
 
 
 function id_value(x, y){
@@ -249,7 +252,7 @@ function possibleSide(player){
 }
 
 // On Click action to move player
-function registerListner(cells,player){
+function registerListner(cells, player){
     cells.bind("click", function(){
         $('.grid-cell').removeClass('possible-cell');
         updatedPosition = $(this).attr('id');
@@ -263,8 +266,6 @@ function registerListner(cells,player){
                 dropingWeapon(player, player.position, weapon_class);
             }
         }
-        // player.replaceWeapon(weapon_class);
-        console.log(turn);
         // fight activation state
         let p1_xy = xy_extract(firstPlayer.position);
         let p2_xy = xy_extract(secondPlayer.position);
@@ -275,19 +276,12 @@ function registerListner(cells,player){
             (x_diff == 1 && y_diff == 0) ||
             (x_diff == 0 && y_diff == -1) ||
             (x_diff == 0 && y_diff == 1)){
-                fight();
-                console.log(turn);
-                return;
-        } else{
-            if (turn == 1){
-                turn = 2;
-            }
-            else if (turn == 2) {
-                turn = 1;
-            }
-            changeTurn();
-            turnOnMovement();
+                if(firstPlayer.weapon != null && secondPlayer.weapon != null){
+                    fightStatus = 1;
+                    changeTurn();
+                }
         }
+        moveOrFight();
     });
 }
 
@@ -298,54 +292,49 @@ function movements(player){
     registerListner(possibleCell, player);
 }
 
-function fightBtns(player1, player2){
-    $('#' + player1 + '_btns').css('display', 'block');
-    $('#' + player2 + '_btns').css('display', 'none');
-}
-
-
-function fight(){
-    // $('.grid-cell').unbind('click');
-    if (firstPlayer.power <= 0 || secondPlayer.power <= 0) {
-        alert('Game Over');
-    }else {
-        if (turn == 1) {
-            $('#whale_attack').unbind("click");
-            $('#whale_defend').unbind("click");
-            fightBtns(firstPlayer.name, secondPlayer.name);
-            firstPlayer.attackValue = 10;
-            $('#turtle_attack').bind("click", function(){
-                let curr_val = $('#whale_power').val();
-                let new_val = Number(curr_val) - secondPlayer.attackValue;
-                $('#whale_power').val(new_val);
-                firstPlayer.power = new_val;
-            });
-            $('#turtle_defend').bind("click", function(){
-                firstPlayer.attackValue = 5;
-            });
-            turn = 2;
-            changeTurn();
-        }else if (turn == 2) {
-            $('#turtle_attack').unbind("click");
-            $('#turtle_defend').unbind("click");
-            fightBtns(secondPlayer.name, firstPlayer.name);
-            secondPlayer.attackValue = 10;
-            $('#whale_attack').bind("click", function(){
-                let curr_val = $('#turtle_power').val();
-                let new_val = Number(curr_val) - firstPlayer.attackValue;
-                $('#turtle_power').val(new_val);
-                secondPlayer.power = new_val;
-            });
-            $('#whale_defend').bind("click", function(){
-                secondPlayer.attackValue = 5;
-            });
-            turn = 1;
-            changeTurn();
-        }
+function attack(player1, player2){
+    $('#' + player2.name + '_attack').unbind("click");
+    $('#' + player2.name + '_defend').unbind("click");
+    // show and hide attack buttons
+    $('#' + player1.name + '_btns').css('display', 'block');
+    $('#' + player2.name + '_btns').css('display', 'none');
+    // default attack value
+    player1.attackValue = 10;
+    $('#' + player1.name + '_attack').bind("click", function(){
+        let curr_val = $('#' + player2.name + '_power').val();
+        let new_val = Number(curr_val) - player2.attackValue;
+        $('#' + player2.name + '_power').val(new_val);
+        player1.power = new_val;
+        moveOrFight();
+    });
+    $('#' + player1.name + '_defend').bind("click", function(){
+        player1.attackValue = 5;
+        moveOrFight();
+    });
+    if(player2.power <= 0){
+        player1.winner();
+        // again();
     }
 }
 
 
+function fight(){
+    if (turn == 1) {
+        attack(firstPlayer, secondPlayer);
+    }else if (turn == 2) {
+        attack(secondPlayer, firstPlayer);
+    }
+}
+/*
+function again(){
+    $('.game-grid').replaceWith("");
+    $('#end').css('display', 'block');
+}
+
+$('#play_again').click(function(){
+    $(document).reload();
+});
+*/
 // all functions needs to be loaded with page
 $('#start_button').click(function(){
     $( "#start" ).replaceWith("");
@@ -356,5 +345,5 @@ $('#start_button').click(function(){
     secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2', 100);
     firstPlayer.playerPosition();
     secondPlayer.playerPosition();
-    turnOnMovement();
+    moveOrFight();
 });

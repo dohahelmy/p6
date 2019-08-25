@@ -16,8 +16,10 @@
                         <div id="turtle_on" class="turn-on"></div>
                         <h1>power</h1>
                         <progress id="turtle_power" value="100" max="100"></progress>
-                        <h1>weapon</h1>
-                        <img id="turtle_weapon" src="" width="35px">
+                        <div class="wpn">
+                            <h1>weapon</h1>
+                            <img id="turtle_weapon" src="" width="35px">
+                        </div>
                         <div id='turtle_btns' class="attack">
                             <button id='turtle_attack' class="attack_buttons" type="button" name="attack">attack</button>
                             <button id='turtle_defend' class="attack_buttons" type="button" name="defend">defend</button>
@@ -38,6 +40,9 @@
                             <button id="start_button" type="button" name="button" style="display:block;">Start Game</button>
                         </div>
                     </div>
+                    <div id="end" style="display: none">
+                        <button id="play_again" type="button" name="button">Play Again</button>
+                    </div>
                 </section>
                 <section class="grid-item">
                     <div id="whale" class="player-board">
@@ -45,11 +50,13 @@
                         <div id="whale_on" class="turn-on"></div>
                         <h1>power</h1>
                         <progress id="whale_power" value="100" max="100"></progress>
-                        <h1>weapon</h1>
-                        <img id="whale_weapon" src="" width="35px">
+                        <div class="wpn">
+                            <h1>weapon</h1>
+                            <img id="whale_weapon" src="" width="35px">
+                        </div>
                         <div id='whale_btns' class="attack">
                             <button id='whale_attack' class="attack_buttons" type="button" name="attack">attack</button>
-                            <button id='whale_attack' class="attack_buttons" type="button" name="defend">defend</button>
+                            <button id='whale_defend' class="attack_buttons" type="button" name="defend">defend</button>
                         </div>
                     </div>
                 </section>
