@@ -20,6 +20,18 @@ main{
     margin: 100px;
 }
 
+#start h3{
+    font-size: 22px;
+    color: #3f752e;
+    text-transform: uppercase;
+}
+
+#start .Instruction_item{
+    font-size: 18px;
+    margin-bottom: 30px;
+    list-style-type: square;
+}
+
 #start_button{
     background-color: #529c3b;
     border: none;
@@ -66,6 +78,8 @@ main{
 .w3{background-image: url("../img/weapons/w3.png");}
 .w4{background-image: url("../img/weapons/w4.png");}
 .w5{background-image: url("../img/weapons/w5.png");}
+.w6{background-image: url("../img/weapons/w6.png");}
+.w7{background-image: url("../img/weapons/w7.png");}
 
 .gameBoard{
     display: grid;

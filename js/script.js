@@ -5,8 +5,8 @@ ____________________________________________________________________________*/
 let turn = 1; let cell_val;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
-let firstPlayer; let secondPlayer;
-let w1, w2, w3, w4, w5;
+let firstPlayer, secondPlayer;
+let w1, w2, w3, w4, w5, w6, w7;
 let fightStatus = 0;
 // let weapon_class;
 
@@ -33,6 +33,7 @@ class player {
     };
     defaultWeapon(){
         $('#' + this.name + '_weapon').attr('src', 'img/weapons/' + this.weapon +'.png');
+        $('#' + this.name +'AttackValue').html("Attack Value = 10");
     };
     winner(){
         $('#turtle_btns').css('display', "none");
@@ -121,6 +122,7 @@ class weapon {
 // weapons random locations load
 function weaponsPositions(){
     for (let i = 1; i < 6; i++) {
+
         let idPosition = randomLocation();
         // check id retunred if reserved or not
         if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
@@ -135,21 +137,18 @@ function weaponsPositions(){
 
 // Adding weapom image to player board
 function collectedWeapon(player, weapon_num){
+    console.log(w1);
+
     player.weapon = weapon_num;
+    console.log(weapon_num);
     $('.'+weapon_num).removeClass(weapon_num);
-    return $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
-    let w;
-    switch (weapon_num) {
-        case "w1": w = w1; break;
-        case "w2": w = w2; break;
-        case "w3": w = w3; break;
-        case "w4": w = w4; break;
-        case "w5": w = w5; break;
-        default:
-    }
-    player.attackValue = w.damageValue;
-    console.log("w damageValue = " + w.damageValue);
+    player.attackValue = eval(weapon_num).damageValue;
+    console.log("w damageValue = " + eval(weapon_num).damageValue);
     console.log("attackValue = " + player.attackValue);
+    $('#' + player.name +'AttackValue').html("Attack Value = "+ player.attackValue);
+
+    return $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
+
 }
 
 // Droping current weapon and collecting new weapon
@@ -312,20 +311,21 @@ function attack(player1, player2){
     $('#' + player1.name + '_btns').css('display', 'block');
     $('#' + player2.name + '_btns').css('display', 'none');
     // default attack value
-    player1.attackValue = 10;
+
+    player2.attackValue =eval(player2.weapon).damageValue;
     $('#' + player1.name + '_attack').bind("click", function(){
         let curr_val = $('#' + player2.name + '_power').val();
-        let new_val = Number(curr_val) - player2.attackValue;
+        let new_val = Number(curr_val) - player1.attackValue;
         $('#' + player2.name + '_power').val(new_val);
         player1.power = new_val;
         moveOrFight();
     });
     $('#' + player1.name + '_defend').bind("click", function(){
-        player1.attackValue = player1.attackValue / 2;
+        player2.attackValue = player2.attackValue / 2;
         moveOrFight();
     });
     if(player2.power <= 0){
-        player1.winner();
+        player2.winner();
     }
 }
 
@@ -344,6 +344,7 @@ $('#start_button').click(function(){
     createGrid();
     weaponsPositions();
     blockersPositions();
+
     firstPlayer = new player("turtle", "first-sprite", "cell_1-1", '1', 100, 'straw', 'w6', 10);
     secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2', 100, 'cap', 'w7', 10);
     firstPlayer.playerPosition();
@@ -351,14 +352,13 @@ $('#start_button').click(function(){
     firstPlayer.defaultWeapon();
     secondPlayer.defaultWeapon();
 
-    let w1 = new weapon('bag', 'w1', weapons[1], 15);
-    let w2 = new weapon('oil', 'w2', weapons[2], 35);
-    let w3 = new weapon('bottle', 'w3', weapons[3], 25);
-    let w4 = new weapon('cup', 'w4', weapons[4], 20);
-    let w5 = new weapon('garbage', 'w5', weapons[5], 30);
-    console.log(firstPlayer);
-    console.log(secondPlayer);
+    w1 = new weapon('bag', 'w1', weapons[1], 15);
+    w2 = new weapon('oil', 'w2', weapons[2], 35);
+    w3 = new weapon('bottle', 'w3', weapons[3], 25);
+    w4 = new weapon('cup', 'w4', weapons[4], 20);
+    w5 = new weapon('garbage', 'w5', weapons[5], 30);
+    w6 = new weapon('p1w', 'w5', weapons[6], 10);
+    w7 = new weapon('p2w', 'w7', weapons[7], 10);
 
     moveOrFight();
-
 });
