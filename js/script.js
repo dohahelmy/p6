@@ -6,20 +6,22 @@ let turn = 1; let cell_val;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
 let firstPlayer; let secondPlayer;
+let w1, w2, w3, w4, w5;
 let fightStatus = 0;
 // let weapon_class;
 
 // players class and Definitions
 class player {
-    constructor(name, spriteClass, position, turn, power) {
+    constructor(name, spriteClass, position, turn, power, defaultWeaponName, weapon, attackValue) {
         this.name = name;
         this.spriteClass = spriteClass;
         this.position = position;
         this.turn = turn;
         this.power = power;
-        this.attackValue = 10;
-        this.weapon = null;
-     }
+        this.defaultWeaponName = defaultWeaponName;
+        this.weapon = weapon;
+        this.attackValue = attackValue;
+    }
     playerPosition(){
         let playerCell = $('#' + this.position);
         playerCell.addClass('sprite ' + this.spriteClass);
@@ -29,6 +31,9 @@ class player {
         $('#' + newPosition).addClass('sprite ' + this.spriteClass);
         this.position = newPosition;
     };
+    defaultWeapon(){
+        $('#' + this.name + '_weapon').attr('src', 'img/weapons/' + this.weapon +'.png');
+    };
     winner(){
         $('#turtle_btns').css('display', "none");
         $('#whale_btns').css('display', "none");
@@ -36,15 +41,6 @@ class player {
         $('#' + this.name).append("<h1 class='winner'>WINNER</h1>");
     }
 }
-
-
-/*____________________________________________________________________________
-Mini functions
-____________________________________________________________________________*/
-// function to check if the value is existed in the array
-/*function isInArray(value, array) {
-    return array.indexOf(value) > -1;
-}*/
 
 /*____________________________________________________________________________
 Grid creating and Grid-cells position assign and extraction
@@ -113,6 +109,15 @@ function blockersPositions(){
 /*____________________________________________________________________________
 // Weapons-related functions //
 ____________________________________________________________________________*/
+class weapon {
+    constructor(name, weaponClass, position, damageValue){
+        this.name = name;
+        this.weaponClass = weaponClass;
+        this.position = position;
+        this.damageValue= damageValue;
+    }
+}
+
 // weapons random locations load
 function weaponsPositions(){
     for (let i = 1; i < 6; i++) {
@@ -133,11 +138,21 @@ function collectedWeapon(player, weapon_num){
     player.weapon = weapon_num;
     $('.'+weapon_num).removeClass(weapon_num);
     return $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
-
+    let w;
+    switch (weapon_num) {
+        case "w1": w = w1; break;
+        case "w2": w = w2; break;
+        case "w3": w = w3; break;
+        case "w4": w = w4; break;
+        case "w5": w = w5; break;
+        default:
+    }
+    player.attackValue = w.damageValue;
+    console.log("w damageValue = " + w.damageValue);
+    console.log("attackValue = " + player.attackValue);
 }
 
 // Droping current weapon and collecting new weapon
-
 function dropingWeapon(player, position, new_weapon){
     $('#' + player.position).addClass('weapon ' + player.weapon);
     player.changePosition(position);
@@ -178,8 +193,6 @@ function moveOrFight() {
     changeTurn();
 }
 
-
-
 function id_value(x, y){
     return "cell_" + x.toString() + '-' + y.toString();
 }
@@ -192,7 +205,7 @@ function isblocker(i){
     return $('#' + possibleCellID).hasClass('blocker') ||  $('#' + possibleCellID).hasClass('sprite') || (i < 1) || (i > 10);
 }
 
-function lowerForLoop(){
+function lowerLoop(){
     for(let i = 0; i < lower.length; i++){
         $('#' + lower[i]).addClass('possible-cell');
     }
@@ -226,7 +239,7 @@ function possibleSide(player){
             }
         }
     }
-    lowerForLoop();
+    lowerLoop();
 
     //Vertical possible cells
     for(y_new; y_new <= y + 3; y_new++){
@@ -248,7 +261,7 @@ function possibleSide(player){
             }
         }
     }
-    lowerForLoop();
+    lowerLoop();
 }
 
 // On Click action to move player
@@ -260,11 +273,11 @@ function registerListner(cells, player){
         // take weapon
         if(weapons.indexOf(updatedPosition) > -1){
             let weapon_class = ($(this).attr('class').split(' ').splice(2, 1)).toString();
-            if(player.weapon == null){
-                collectedWeapon(player, weapon_class);
-            }else {
-                dropingWeapon(player, player.position, weapon_class);
-            }
+            dropingWeapon(player, player.position, weapon_class);
+            // if(player.weapon == null){
+            //     collectedWeapon(player, weapon_class);
+            // }else {
+            // }
         }
         // fight activation state
         let p1_xy = xy_extract(firstPlayer.position);
@@ -276,10 +289,10 @@ function registerListner(cells, player){
             (x_diff == 1 && y_diff == 0) ||
             (x_diff == 0 && y_diff == -1) ||
             (x_diff == 0 && y_diff == 1)){
-                if(firstPlayer.weapon != null && secondPlayer.weapon != null){
-                    fightStatus = 1;
-                    changeTurn();
-                }
+                fightStatus = 1;
+                changeTurn();
+                // if(firstPlayer.weapon != null && secondPlayer.weapon != null){
+                // }
         }
         moveOrFight();
     });
@@ -308,12 +321,11 @@ function attack(player1, player2){
         moveOrFight();
     });
     $('#' + player1.name + '_defend').bind("click", function(){
-        player1.attackValue = 5;
+        player1.attackValue = player1.attackValue / 2;
         moveOrFight();
     });
     if(player2.power <= 0){
         player1.winner();
-        // again();
     }
 }
 
@@ -325,25 +337,28 @@ function fight(){
         attack(secondPlayer, firstPlayer);
     }
 }
-/*
-function again(){
-    $('.game-grid').replaceWith("");
-    $('#end').css('display', 'block');
-}
 
-$('#play_again').click(function(){
-    $(document).reload();
-});
-*/
 // all functions needs to be loaded with page
 $('#start_button').click(function(){
     $( "#start" ).replaceWith("");
     createGrid();
     weaponsPositions();
     blockersPositions();
-    firstPlayer = new player("turtle", "first-sprite", "cell_1-1", '1', 100);
-    secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2', 100);
+    firstPlayer = new player("turtle", "first-sprite", "cell_1-1", '1', 100, 'straw', 'w6', 10);
+    secondPlayer = new player("whale", "second-sprite", "cell_10-10", '2', 100, 'cap', 'w7', 10);
     firstPlayer.playerPosition();
     secondPlayer.playerPosition();
+    firstPlayer.defaultWeapon();
+    secondPlayer.defaultWeapon();
+
+    let w1 = new weapon('bag', 'w1', weapons[1], 15);
+    let w2 = new weapon('oil', 'w2', weapons[2], 35);
+    let w3 = new weapon('bottle', 'w3', weapons[3], 25);
+    let w4 = new weapon('cup', 'w4', weapons[4], 20);
+    let w5 = new weapon('garbage', 'w5', weapons[5], 30);
+    console.log(firstPlayer);
+    console.log(secondPlayer);
+
     moveOrFight();
+
 });
