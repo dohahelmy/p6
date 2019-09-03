@@ -100,7 +100,6 @@ main{
     box-shadow: 1px 1px 20px 0px #1f1f1f;
 }
 
-
 .turn-on{
     width: 25px;
     height: 25px;
@@ -124,15 +123,6 @@ main{
 }
 .attack .attack_buttons:last-child{
     background-color: #529c3b;
-}
-
-
-@keyframes winner{
-  from, 50%, to {
-    opacity: 1;
-  } 25%, 75% {
-    opacity: 0;
-  }
 }
 
 .winner{

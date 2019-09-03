@@ -1,16 +1,18 @@
 /*____________________________________________________________________________
-Defenitions
+// Global Defenitions //
 ____________________________________________________________________________*/
-// Global Definitions
 let turn = 1; let cell_val;
 let players = ["cell_1-1", "cell_10-10"];
 let blockers = []; let weapons = [];
 let firstPlayer, secondPlayer;
 let w1, w2, w3, w4, w5, w6, w7;
 let fightStatus = 0;
-// let weapon_class;
+let possibleCellID;
+let lower = [];
 
-// players class and Definitions
+/*____________________________________________________________________________
+// players class and Definitions //
+____________________________________________________________________________*/
 class player {
     constructor(name, spriteClass, position, turn, power, defaultWeaponName, weapon, attackValue) {
         this.name = name;
@@ -22,19 +24,23 @@ class player {
         this.weapon = weapon;
         this.attackValue = attackValue;
     }
+    // put players into first positions
     playerPosition(){
         let playerCell = $('#' + this.position);
         playerCell.addClass('sprite ' + this.spriteClass);
     };
+    // change the player positon when moving
     changePosition(newPosition){
         $('#' + this.position).removeClass('sprite ' + this.spriteClass);
         $('#' + newPosition).addClass('sprite ' + this.spriteClass);
         this.position = newPosition;
     };
+    // add the default weapon to the player board
     defaultWeapon(){
         $('#' + this.name + '_weapon').attr('src', 'img/weapons/' + this.weapon +'.png');
         $('#' + this.name +'AttackValue').html("Attack Value = 10");
     };
+    // announce the winner
     winner(){
         $('#turtle_btns').css('display', "none");
         $('#whale_btns').css('display', "none");
@@ -43,18 +49,10 @@ class player {
     }
 }
 
-/*____________________________________________________________________________
-Grid creating and Grid-cells position assign and extraction
-____________________________________________________________________________*/
-// function to create the grid
-function createGrid() {
-    for (let i = 1; i <= 100; i++) {
-        cell_val = cellPosition(i);
-        let gridCell = "<div class='grid-cell' id='cell_" + cell_val + "'></div>";
-        $('#game-grid').append(gridCell);
-    }
-}
 
+/*____________________________________________________________________________
+// Grid and grid cells related functions //
+____________________________________________________________________________*/
 // function to identify the position of the gridCell
 function cellPosition(i){
     // to identify column number
@@ -71,7 +69,16 @@ function cellPosition(i){
     return gridCol + "-" + gridRow;
 }
 
-// generate random location
+// function to create the grid
+function createGrid() {
+    for (let i = 1; i <= 100; i++) {
+        cell_val = cellPosition(i);
+        let gridCell = "<div class='grid-cell' id='cell_" + cell_val + "'></div>";
+        $('#game-grid').append(gridCell);
+    }
+}
+
+// function to generate random location
 function randomLocation (){
     let randomPosition = Math.floor((Math.random() * 100) + 1);
     cell_val = cellPosition(randomPosition);
@@ -108,7 +115,7 @@ function blockersPositions(){
 
 
 /*____________________________________________________________________________
-// Weapons-related functions //
+// Weapons-related Definitions and Functions //
 ____________________________________________________________________________*/
 class weapon {
     constructor(name, weaponClass, position, damageValue){
@@ -122,7 +129,6 @@ class weapon {
 // weapons random locations load
 function weaponsPositions(){
     for (let i = 1; i < 6; i++) {
-
         let idPosition = randomLocation();
         // check id retunred if reserved or not
         if(blockers.indexOf(idPosition) > -1 || weapons.indexOf(idPosition) > -1 || players.indexOf(idPosition) > -1){
@@ -135,23 +141,16 @@ function weaponsPositions(){
     }
 }
 
-// Adding weapom image to player board
+// function to Add weapom image and attack value to player board
 function collectedWeapon(player, weapon_num){
-    console.log(w1);
-
     player.weapon = weapon_num;
-    console.log(weapon_num);
     $('.'+weapon_num).removeClass(weapon_num);
     player.attackValue = eval(weapon_num).damageValue;
-    console.log("w damageValue = " + eval(weapon_num).damageValue);
-    console.log("attackValue = " + player.attackValue);
     $('#' + player.name +'AttackValue').html("Attack Value = "+ player.attackValue);
-
-    return $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
-
+    $('#' + player.name + '_weapon').attr('src', 'img/weapons/' + weapon_num +'.png');
 }
 
-// Droping current weapon and collecting new weapon
+// function to Drop current weapon and collecting new weapon
 function dropingWeapon(player, position, new_weapon){
     $('#' + player.position).addClass('weapon ' + player.weapon);
     player.changePosition(position);
@@ -163,6 +162,7 @@ function dropingWeapon(player, position, new_weapon){
 /*____________________________________________________________________________
 // Game-related Actions functions  //
 ____________________________________________________________________________*/
+//mini functions to minimize main functions of the game
 // function to switching turns using a bullet on board
 function changeTurn(){
     if (turn == 1){
@@ -177,33 +177,17 @@ function changeTurn(){
     }
 }
 
-// activating movements functions on turn
-function moveOrFight() {
-    $('.grid-cell').unbind('click');
-    if(fightStatus == 0){
-        if(turn == 1){
-            movements(firstPlayer);
-        }else if(turn == 2){
-            movements(secondPlayer);
-        }
-    }else{
-        fight();
-    }
-    changeTurn();
-}
-
+// construct id from x and y points
 function id_value(x, y){
     return "cell_" + x.toString() + '-' + y.toString();
 }
 
-
-let possibleCellID;
-let lower = [];
-// Mostafa edits
+// function to check if the grid cell contains any blocker
 function isblocker(i){
     return $('#' + possibleCellID).hasClass('blocker') ||  $('#' + possibleCellID).hasClass('sprite') || (i < 1) || (i > 10);
 }
 
+// function to add possible cell class to positions lower current position
 function lowerLoop(){
     for(let i = 0; i < lower.length; i++){
         $('#' + lower[i]).addClass('possible-cell');
@@ -224,8 +208,7 @@ function possibleSide(player){
         if(isblocker(x_new)){
             if(x_new == x){
                 continue;
-            }
-            if(x_new < x){
+            } else if(x_new < x){
                 lower = [];
             } else{
                 break;
@@ -246,8 +229,7 @@ function possibleSide(player){
         if(isblocker(y_new)){
             if(y_new == y){
                 continue;
-            }
-            if(y_new < y){
+            } else if(y_new < y){
                 lower = [];
             } else{
                 break;
@@ -263,6 +245,21 @@ function possibleSide(player){
     lowerLoop();
 }
 
+// function to activating movements or fight functions on turn
+function moveOrFight() {
+    $('.grid-cell').unbind('click');
+    if(fightStatus == 0){
+        if(turn == 1){
+            movements(firstPlayer);
+        }else if(turn == 2){
+            movements(secondPlayer);
+        }
+    }else{
+        fight();
+    }
+    changeTurn();
+}
+
 // On Click action to move player
 function registerListner(cells, player){
     cells.bind("click", function(){
@@ -273,10 +270,6 @@ function registerListner(cells, player){
         if(weapons.indexOf(updatedPosition) > -1){
             let weapon_class = ($(this).attr('class').split(' ').splice(2, 1)).toString();
             dropingWeapon(player, player.position, weapon_class);
-            // if(player.weapon == null){
-            //     collectedWeapon(player, weapon_class);
-            // }else {
-            // }
         }
         // fight activation state
         let p1_xy = xy_extract(firstPlayer.position);
@@ -290,8 +283,6 @@ function registerListner(cells, player){
             (x_diff == 0 && y_diff == 1)){
                 fightStatus = 1;
                 changeTurn();
-                // if(firstPlayer.weapon != null && secondPlayer.weapon != null){
-                // }
         }
         moveOrFight();
     });
@@ -304,32 +295,36 @@ function movements(player){
     registerListner(possibleCell, player);
 }
 
+// function to execute the attack and defend buttons
 function attack(player1, player2){
     $('#' + player2.name + '_attack').unbind("click");
     $('#' + player2.name + '_defend').unbind("click");
     // show and hide attack buttons
     $('#' + player1.name + '_btns').css('display', 'block');
     $('#' + player2.name + '_btns').css('display', 'none');
-    // default attack value
-
-    player2.attackValue =eval(player2.weapon).damageValue;
+    // reset attack value
+    player2.attackValue = eval(player2.weapon).damageValue;
+    // attack button
     $('#' + player1.name + '_attack').bind("click", function(){
         let curr_val = $('#' + player2.name + '_power').val();
         let new_val = Number(curr_val) - player1.attackValue;
         $('#' + player2.name + '_power').val(new_val);
         player1.power = new_val;
+        $('#'+ player2.name + '_progress_value').html(new_val + '%');
         moveOrFight();
     });
+    // defend button
     $('#' + player1.name + '_defend').bind("click", function(){
         player2.attackValue = player2.attackValue / 2;
         moveOrFight();
     });
+    // end game condition
     if(player2.power <= 0){
         player2.winner();
     }
 }
 
-
+// function to execute attack and switch turns for players to fight
 function fight(){
     if (turn == 1) {
         attack(firstPlayer, secondPlayer);
@@ -338,7 +333,7 @@ function fight(){
     }
 }
 
-// all functions needs to be loaded with page
+// all functions needs to be loaded when start game to clicked
 $('#start_button').click(function(){
     $( "#start" ).replaceWith("");
     createGrid();
